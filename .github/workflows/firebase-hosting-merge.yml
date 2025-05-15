@@ -42,7 +42,7 @@ jobs:
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EMPRESTAPRO_PAGE }}
-          projectId: zergiocunha-dev
+          projectId: emprestapro-page
           channelId: dev
         env:
           FIREBASE_CLI_EXPERIMENTS: webframeworks
@@ -53,7 +53,7 @@ jobs:
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EMPRESTAPRO_PAGE }}
-          projectId: zergiocunha-dev
+          projectId: emprestapro-page
           channelId: qas
         env:
           FIREBASE_CLI_EXPERIMENTS: webframeworks
@@ -64,7 +64,7 @@ jobs:
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EMPRESTAPRO_PAGE }}
-          projectId: zergiocunha-dev
+          projectId: emprestapro-page
           channelId: live
 
         env:
