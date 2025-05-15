@@ -15,14 +15,24 @@ class _CallToActionSectionState extends State<CallToActionSection> {
 
   @override
   Widget build(BuildContext context) {
+    // Obter o tamanho da tela
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
+
     return Container(
       decoration: BoxDecoration(
         gradient: AppColors.accentGlow,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppColors.primaryGreen.withOpacity(0.3)),
       ),
-      margin: const EdgeInsets.symmetric(horizontal: 24),
-      padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 24),
+      margin: EdgeInsets.symmetric(
+        horizontal: isMobile ? 16 : 24, // Margem menor em dispositivos móveis
+        vertical: isMobile ? 16 : 0,
+      ),
+      padding: EdgeInsets.symmetric(
+        vertical: isMobile ? 40 : 80,
+        horizontal: isMobile ? 16 : 24,
+      ),
       child: Stack(
         children: [
           // Efeito de fundo animado
@@ -53,36 +63,36 @@ class _CallToActionSectionState extends State<CallToActionSection> {
           // Conteúdo
           Column(
             children: [
-              const Text(
+              Text(
                 '🚀 Pronto para Revolucionar',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: isMobile ? 16 : 20,
                   color: AppColors.primaryGreen,
                   fontWeight: FontWeight.w600,
                 ),
               ).animate().fadeIn().slideY(begin: -0.2),
-              const SizedBox(height: 16),
-              const Text(
-                'Transforme Seu Controle Financeiro Hoje',
+              SizedBox(height: isMobile ? 12 : 16),
+              Text(
+                'Transforme Seu Controle\nFinanceiro Hoje',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 36,
+                  fontSize: isMobile ? 28 : 36,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                   height: 1.2,
                 ),
               ).animate().fadeIn().scale(),
-              const SizedBox(height: 24),
-              const Text(
+              SizedBox(height: isMobile ? 16 : 24),
+              Text(
                 'Junte-se a milhares de empresas que já estão otimizando suas finanças',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: isMobile ? 14 : 18,
                   color: AppColors.secoundaryText,
                 ),
               ).animate().fadeIn().slideY(begin: 0.2),
-              const SizedBox(height: 40),
+              SizedBox(height: isMobile ? 32 : 40),
               MouseRegion(
                 onEnter: (_) => setState(() => isHovered = true),
                 onExit: (_) => setState(() => isHovered = false),
@@ -93,9 +103,9 @@ class _CallToActionSectionState extends State<CallToActionSection> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryGreen,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 40,
-                        vertical: 20,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isMobile ? 24 : 40,
+                        vertical: isMobile ? 16 : 20,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -106,17 +116,17 @@ class _CallToActionSectionState extends State<CallToActionSection> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(
+                        Text(
                           'Começar Gratuitamente',
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: isMobile ? 16 : 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Icon(
+                        Icon(
                           Icons.arrow_forward,
-                          size: 20,
+                          size: isMobile ? 16 : 20,
                         )
                             .animate(
                               target: isHovered ? 1 : 0,
@@ -130,17 +140,28 @@ class _CallToActionSectionState extends State<CallToActionSection> {
                   ),
                 ),
               ).animate().fadeIn().slideY(begin: 0.2),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildFeatureIcon(Icons.lock, 'Teste Grátis'),
-                  _buildDivider(),
-                  _buildFeatureIcon(Icons.credit_card, 'Sem Cartão'),
-                  _buildDivider(),
-                  _buildFeatureIcon(Icons.touch_app, 'Cancele Quando Quiser'),
-                ],
-              ).animate().fadeIn().slideY(begin: 0.2),
+              SizedBox(height: isMobile ? 20 : 24),
+              if (isMobile)
+                Column(
+                  children: [
+                    _buildFeatureIcon(Icons.lock, 'Teste Grátis'),
+                    SizedBox(height: 12),
+                    _buildFeatureIcon(Icons.credit_card, 'Sem Cartão'),
+                    SizedBox(height: 12),
+                    _buildFeatureIcon(Icons.touch_app, 'Cancele Quando Quiser'),
+                  ],
+                ).animate().fadeIn().slideY(begin: 0.2)
+              else
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildFeatureIcon(Icons.lock, 'Teste Grátis'),
+                    _buildDivider(),
+                    _buildFeatureIcon(Icons.credit_card, 'Sem Cartão'),
+                    _buildDivider(),
+                    _buildFeatureIcon(Icons.touch_app, 'Cancele Quando Quiser'),
+                  ],
+                ).animate().fadeIn().slideY(begin: 0.2),
             ],
           ),
         ],
@@ -149,15 +170,21 @@ class _CallToActionSectionState extends State<CallToActionSection> {
   }
 
   Widget _buildFeatureIcon(IconData icon, String text) {
+    final isMobile = MediaQuery.of(context).size.width < 600;
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 16, color: AppColors.primaryGreen),
+        Icon(
+          icon,
+          size: isMobile ? 14 : 16,
+          color: AppColors.primaryGreen,
+        ),
         const SizedBox(width: 8),
         Text(
           text,
-          style: const TextStyle(
-            fontSize: 14,
+          style: TextStyle(
+            fontSize: isMobile ? 12 : 14,
             color: AppColors.secoundaryText,
           ),
         ),
