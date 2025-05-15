@@ -41,6 +41,22 @@ class AppColors {
     stops: [0.0, 0.5, 1.0],
   );
 
+  static const LinearGradient heroBackground = LinearGradient(
+    colors: [
+      Color(0xFF1A1F24),
+      Color(0xFF1E2429),
+      Color(0xFF1E2A2A),
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const List<Color> particleColors = [
+    Color(0xFF39D2C0),
+    Color(0xFF00968A),
+    Color(0xFF1E2A2A),
+  ];
+
   // Efeitos de Glass
   static BoxDecoration glassEffect = BoxDecoration(
     color: Colors.white.withOpacity(0.05),
