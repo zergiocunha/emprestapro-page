@@ -26,12 +26,12 @@ class _HeroSectionState extends State<HeroSection>
     super.initState();
     _particleController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 10),
+      duration: const Duration(seconds: 20), // Aumentando o período
     )..repeat();
 
     _floatingController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 3),
     )..repeat(reverse: true);
   }
 
@@ -44,251 +44,301 @@ class _HeroSectionState extends State<HeroSection>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: AppColors.mainBackground,
-        backgroundBlendMode: BlendMode.multiply,
-      ),
-      child: Stack(
-        children: [
-          _buildBackgroundMist(),
-          _buildSectionOutline(), // Novo efeito
-          ..._buildBackgroundParticles(),
-          _buildRadialGlow(),
-
-          // Conteúdo principal centralizado
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                  vertical: 120), // Aumentado o padding
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 1200),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Logo com efeito de brilho
-                    Container(
-                      width: 180, // Aumentado de 120 para 180
-                      height: 180, // Aumentado de 120 para 180
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: AppColors.background.withOpacity(0.8),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primaryGreen.withOpacity(0.2),
-                            blurRadius: 30,
-                            spreadRadius: 5,
+    return RepaintBoundary(
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: AppColors.mainBackground,
+          backgroundBlendMode: BlendMode.multiply,
+        ),
+        child: Stack(
+          children: [
+            _buildBackgroundMist(),
+            ..._buildBackgroundParticles(),
+            RepaintBoundary(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 120),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 1200),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Logo com efeito de brilho
+                        Container(
+                          width: 180,
+                          height: 180,
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: AppColors.background.withOpacity(0.8),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primaryGreen.withOpacity(0.2),
+                                blurRadius: 100,
+                                spreadRadius: 30,
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      child: Image.asset('assets/logo.png'),
-                    ).animate().fadeIn(duration: 800.ms).scale(),
+                          child: Image.asset('assets/logo.png'),
+                        )
+                            .animate()
+                            .fadeIn(duration: 800.ms)
+                            .scale(
+                              alignment: Alignment.center,
+                              begin: const Offset(0.5, 0.5),
+                              end: const Offset(1.0, 1.0),
+                              duration: 1800.ms,
+                              curve: Curves.easeOutBack,
+                            )
+                            .custom(
+                              duration: 1200.ms,
+                              builder: (context, value, child) {
+                                // Garantindo que a opacidade esteja entre 0 e 1
+                                final opacity =
+                                    (0.5 * (1 - value)).clamp(0.0, 1.0);
 
-                    const SizedBox(height: 60), // Aumentado de 40 para 60
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.primaryGreen
+                                            .withOpacity(opacity),
+                                        blurRadius: value < 0.5
+                                            ? 100 * (1 - value * 2)
+                                            : 0,
+                                        spreadRadius: value < 0.5
+                                            ? 50 * (1 - value * 2)
+                                            : 0,
+                                      ),
+                                    ],
+                                  ),
+                                  child: child,
+                                );
+                              },
+                            )
+                            .then()
+                            .custom(
+                              duration: const Duration(seconds: 3),
+                              builder: (context, value, child) {
+                                // Garantindo que a opacidade esteja entre 0 e 1
+                                final opacity =
+                                    (0.2 + (value * 0.1)).clamp(0.0, 1.0);
 
-                    // Título com efeito gradiente animado
-                    ShaderMask(
-                      shaderCallback: (bounds) => LinearGradient(
-                        colors: [
-                          AppColors.primaryGreen,
-                          Colors.white,
-                          AppColors.primaryGreen.withOpacity(0.7),
-                        ],
-                        stops: const [0.0, 0.5, 1.0],
-                      ).createShader(bounds),
-                      child: Text(
-                        'EmprestaPro',
-                        style:
-                            Theme.of(context).textTheme.displayMedium!.copyWith(
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.primaryGreen
+                                            .withOpacity(opacity),
+                                        blurRadius: 30 + (value * 10),
+                                        spreadRadius: 5 + (value * 3),
+                                      ),
+                                    ],
+                                  ),
+                                  child: child,
+                                );
+                              },
+                            ),
+
+                        const SizedBox(height: 60), // Aumentado de 40 para 60
+
+                        // Título com efeito gradiente animado
+                        ShaderMask(
+                          shaderCallback: (bounds) => LinearGradient(
+                            colors: [
+                              AppColors.primaryGreen,
+                              Colors.white,
+                              AppColors.primaryGreen.withOpacity(0.7),
+                            ],
+                            stops: const [0.0, 0.5, 1.0],
+                          ).createShader(bounds),
+                          child: Text(
+                            'EmprestaPro',
+                            style: Theme.of(context)
+                                .textTheme
+                                .displayMedium!
+                                .copyWith(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1.2,
                                 ),
-                      ),
-                    ).animate().fadeIn().slideY(begin: -0.2),
+                          ),
+                        ).animate().fadeIn().slideY(begin: -0.2),
 
-                    const SizedBox(height: 32), // Aumentado de 24 para 32
+                        const SizedBox(height: 32), // Aumentado de 24 para 32
 
-                    // Subtítulo com efeito typing
-                    SizedBox(
-                      width: 600,
-                      child: Text(
-                        'Controle total dos seus empréstimos,\nde forma simples e profissional.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: AppColors.secoundaryText,
-                          fontSize: 24,
-                          height: 1.4,
-                          shadows: [
-                            Shadow(
-                              color: Colors.black.withOpacity(0.3),
-                              offset: const Offset(0, 2),
-                              blurRadius: 4,
+                        // Subtítulo com efeito typing
+                        SizedBox(
+                          width: 600,
+                          child: Text(
+                            'Controle total dos seus empréstimos,\nde forma simples e profissional.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: AppColors.secoundaryText,
+                              fontSize: 24,
+                              height: 1.4,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  offset: const Offset(0, 2),
+                                  blurRadius: 4,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ).animate().fadeIn().slideY(begin: 0.2),
+
+                        const SizedBox(height: 64), // Aumentado de 48 para 64
+
+                        // Botão com efeito hover
+                        MouseRegion(
+                          onEnter: (_) =>
+                              setState(() => isButtonHovered = true),
+                          onExit: (_) =>
+                              setState(() => isButtonHovered = false),
+                          child: AnimatedContainer(
+                            duration: 200.ms,
+                            transform: Matrix4.identity()
+                              ..scale(isButtonHovered ? 1.05 : 1.0),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primaryGreen,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 40,
+                                  vertical: 24,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                elevation: isButtonHovered ? 8 : 4,
+                              ),
+                              onPressed: () async {
+                                final Uri url =
+                                    Uri.parse('https://zergiocunha.com');
+                                try {
+                                  if (await canLaunchUrl(url)) {
+                                    await launchUrl(url,
+                                        mode: LaunchMode.externalApplication);
+                                  } else {
+                                    throw 'Could not launch $url';
+                                  }
+                                } catch (e) {
+                                  window.open(url.toString(), '_blank');
+                                }
+                              },
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Text(
+                                    'Quero conhecer agora!',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  const Icon(
+                                    Icons.arrow_forward,
+                                    size: 20,
+                                  )
+                                      .animate(
+                                        target: isButtonHovered ? 1 : 0,
+                                      )
+                                      .slideX(
+                                        begin: 0,
+                                        end: 0.5,
+                                      ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ).animate().fadeIn().slideY(begin: 0.4),
+
+                        const SizedBox(height: 64),
+
+                        // Estatísticas com cards de vidro
+                        Wrap(
+                          spacing: 48,
+                          runSpacing: 24,
+                          alignment: WrapAlignment.center,
+                          children: [
+                            _buildStatisticCard(
+                              '10.000+',
+                              'Usuários ativos',
+                              Icons.people,
+                            ),
+                            _buildStatisticCard(
+                              'R\$ 50M+',
+                              'Em empréstimos gerenciados',
+                              Icons.attach_money,
+                            ),
+                            _buildStatisticCard(
+                              '4.8/5',
+                              'Avaliação na Play Store',
+                              Icons.star,
                             ),
                           ],
-                        ),
-                      ),
-                    ).animate().fadeIn().slideY(begin: 0.2),
-
-                    const SizedBox(height: 64), // Aumentado de 48 para 64
-
-                    // Botão com efeito hover
-                    MouseRegion(
-                      onEnter: (_) => setState(() => isButtonHovered = true),
-                      onExit: (_) => setState(() => isButtonHovered = false),
-                      child: AnimatedContainer(
-                        duration: 200.ms,
-                        transform: Matrix4.identity()
-                          ..scale(isButtonHovered ? 1.05 : 1.0),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primaryGreen,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 40,
-                              vertical: 24,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            elevation: isButtonHovered ? 8 : 4,
-                          ),
-                          onPressed: () async {
-                            final Uri url =
-                                Uri.parse('https://zergiocunha.com');
-                            try {
-                              if (await canLaunchUrl(url)) {
-                                await launchUrl(url,
-                                    mode: LaunchMode.externalApplication);
-                              } else {
-                                throw 'Could not launch $url';
-                              }
-                            } catch (e) {
-                              window.open(url.toString(), '_blank');
-                            }
-                          },
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Text(
-                                'Quero conhecer agora!',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              const Icon(
-                                Icons.arrow_forward,
-                                size: 20,
-                              )
-                                  .animate(
-                                    target: isButtonHovered ? 1 : 0,
-                                  )
-                                  .slideX(
-                                    begin: 0,
-                                    end: 0.5,
-                                  ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ).animate().fadeIn().slideY(begin: 0.4),
-
-                    const SizedBox(height: 64),
-
-                    // Estatísticas com cards de vidro
-                    Wrap(
-                      spacing: 48,
-                      runSpacing: 24,
-                      alignment: WrapAlignment.center,
-                      children: [
-                        _buildStatisticCard(
-                          '10.000+',
-                          'Usuários ativos',
-                          Icons.people,
-                        ),
-                        _buildStatisticCard(
-                          'R\$ 50M+',
-                          'Em empréstimos gerenciados',
-                          Icons.attach_money,
-                        ),
-                        _buildStatisticCard(
-                          '4.8/5',
-                          'Avaliação na Play Store',
-                          Icons.star,
-                        ),
+                        ).animate().fadeIn().slideY(begin: 0.3),
                       ],
-                    ).animate().fadeIn().slideY(begin: 0.3),
-                  ],
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   List<Widget> _buildBackgroundParticles() {
-    return List.generate(80, (index) {
-      // Variação no tamanho das partículas
-      final size = _random.nextDouble() * 4 + 1;
+    // Aumentando para 50 partículas (era 30)
+    return List.generate(300, (index) {
+      // Criando tamanhos variados mas mantendo pequenos para performance
+      final size = 1.5 + (index % 4) * 0.5; // Variação entre 1.5 e 3.0
 
-      // Distribuição em toda a tela com mais concentração nas laterais
+      // Calculando posições iniciais
       final x = _random.nextDouble() * MediaQuery.of(context).size.width;
       final y = _random.nextDouble() * MediaQuery.of(context).size.height;
 
-      // Velocidade de movimento variável
-      final speed = _random.nextDouble() * 2 + 1;
+      // Criando movimento mais suave e variado
+      final speed =
+          0.8 + (_random.nextDouble() * 0.4); // Velocidade entre 0.8 e 1.2
+      final amplitude = 20 + (index % 3) * 5.0; // Amplitude entre 20 e 30
 
       return AnimatedBuilder(
         animation: _particleController,
         builder: (context, child) {
           final progress = _particleController.value * speed;
-
-          // Movimento orbital suave
           final offset = Offset(
-            x + math.sin((progress + index) * math.pi) * 50,
-            y + math.cos((progress + index) * math.pi) * 30,
+            x + math.sin((progress + index) * math.pi) * amplitude,
+            y + math.cos((progress + index) * math.pi) * (amplitude * 0.7),
           );
 
           return Positioned(
             left: offset.dx,
             top: offset.dy,
-            child: AnimatedOpacity(
-              duration: const Duration(milliseconds: 500),
-              opacity: 0.3 + (_floatingController.value * 0.3),
-              child: Container(
-                width: size,
-                height: size,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      AppColors.primaryGreen.withOpacity(0.6),
-                      AppColors.primaryGreen.withOpacity(0.0),
-                    ],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primaryGreen.withOpacity(0.2),
-                      blurRadius: size * 2,
-                      spreadRadius: size / 2,
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            child: child!,
           );
         },
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: AppColors.primaryGreen
+                .withOpacity(0.2 + (_random.nextDouble() * 0.1)),
+          ),
+        ),
       );
     });
   }
 
-  Widget _buildRadialGlow() {
+  Widget _buildBackgroundMist() {
     return Positioned.fill(
       child: AnimatedBuilder(
         animation: _floatingController,
@@ -298,11 +348,10 @@ class _HeroSectionState extends State<HeroSection>
               gradient: RadialGradient(
                 colors: [
                   AppColors.primaryGreen
-                      .withOpacity(0.1 * _floatingController.value),
+                      .withOpacity(0.15 * _floatingController.value),
                   Colors.transparent,
                 ],
-                center: Alignment.center,
-                radius: 1.0 + (_floatingController.value * 0.2),
+                radius: 1.0,
               ),
             ),
           );
@@ -311,96 +360,43 @@ class _HeroSectionState extends State<HeroSection>
     );
   }
 
-  Widget _buildAnimatedGrid() {
-    return Positioned.fill(
-      child: AnimatedBuilder(
-        animation: _particleController,
-        builder: (context, child) {
-          return CustomPaint(
-            painter: GridPainter(
-              progress: _particleController.value,
-              color: AppColors.primaryGreen.withOpacity(0.1),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildBackgroundMist() {
-    return Positioned.fill(
-      child: AnimatedBuilder(
-        animation: _floatingController,
-        builder: (context, child) {
-          return CustomPaint(
-            painter: MistPainter(
-              progress: _floatingController.value,
-              color: AppColors.primaryGreen,
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildSectionOutline() {
-    return Positioned.fill(
-      child: AnimatedBuilder(
-        animation: _particleController,
-        builder: (context, child) {
-          return CustomPaint(
-            painter: SectionOutlinePainter(
-              progress: _particleController.value,
-              color: AppColors.primaryGreen,
-            ),
-          );
-        },
-      ),
-    );
-  }
-
   Widget _buildStatisticCard(String value, String label, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.primaryGreen.withOpacity(0.1),
+    return RepaintBoundary(
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: AppColors.primaryGreen.withOpacity(0.1),
+          ),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryGreen.withOpacity(0.05),
-            blurRadius: 20,
-            spreadRadius: -5,
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Icon(
-            icon,
-            color: AppColors.primaryGreen,
-            size: 32,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+        child: Column(
+          children: [
+            Icon(
+              icon,
+              color: AppColors.primaryGreen,
+              size: 32,
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
-              fontSize: 16,
+            const SizedBox(height: 16),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.7),
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -555,15 +551,15 @@ class SectionOutlinePainter extends CustomPainter {
 
     final width = size.width;
     final height = size.height;
-    final frequency = 2 * math.pi; // Movido para fora do loop
+    const frequency = 2 * math.pi; // Movido para fora do loop
 
     // Desenha linhas de fluxo
     final path = Path();
-    final count = 5;
+    const count = 5;
 
     for (var i = 0; i < count; i++) {
       final verticalOffset = height * (i / (count - 1));
-      final waveHeight = 50.0;
+      const waveHeight = 50.0;
 
       path.moveTo(0, verticalOffset);
 
